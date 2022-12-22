@@ -42,6 +42,6 @@ spec:
             failureThreshold: 5
           env:
             - name: APP_CONFIG_HEALTH_LIVENESS
-              value: {{ .Values.config.health.liveness }}
+              value: {{ .Values.config.health.liveness | quote }}
             - name: APP_CONFIG_HEALTH_READINESS
-              value: {{ .Values.config.health.readiness }}
+              value: {{ .Values.config.health.readiness | quote }}
