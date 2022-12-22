@@ -36,3 +36,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build project
         run: mvn -ntp -B -e clean package -Dquarkus.container-image.registry=${{ env.REGISTRY }} -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -Dquarkus.application.version=${{ steps.project_version.outputs.stdout }}
+      - name: Build helm
+        run: |
+          helm package target/helm/todo-bff
+          PKG_NAME=`ls *.tgz`
+          helm push ${PKG_NAME} oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts
