@@ -6,6 +6,8 @@ image:
   repository: andrejpetras/todo-bff
   tag: ${quarkus.application.version}
 
+replicas: 1
+
 service:
   port: 80
 
