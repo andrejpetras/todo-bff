@@ -22,7 +22,7 @@ jobs:
           cache: 'maven'
       - name: Project version
         id: project_version
-        uses: lorislab/samo-action@v1
+        uses: lorislab/samo-action@v1.0.0
         with:
           args: samo project version
       - name: Login to GitHub Container Registry
