@@ -1,3 +1,3 @@
   apiVersion: v2
-  name: todo-bff
+  name: todo-ui
   version: ${quarkus.application.version}
