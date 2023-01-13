@@ -1,25 +1,6 @@
-
-domain: localhost
-
-image:
-  registry: ghcr.io
-  repository: andrejpetras/todo-bff
-  tag: ${quarkus.application.version}
-
-replicas: 1
-
-service:
-  port: 80
-
-pod:
-  port: 8080
-
-livenessProbe:
-  url: /q/health/live
-readinessProbe:
-  url: /q/health/ready
-
-config:
-  health:
-    liveness: "true"
-    readiness: "true"
+app:
+  name: bff
+  version: ${quarkus.application.version}
+  image:
+    repository: andrejpetras/todo-bff
+    tag: ${quarkus.application.version}

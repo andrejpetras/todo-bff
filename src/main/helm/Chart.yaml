@@ -1,3 +1,8 @@
-  apiVersion: v2
-  name: todo-bff
-  version: ${quarkus.application.version}
+apiVersion: v2
+name: todo-bff
+version: ${quarkus.application.version}
+dependencies:
+  - name: quarkus
+    alias: app
+    version: ">= 0.0.0-0"
+    repository: oci://ghcr.io/andrejpetras/charts
