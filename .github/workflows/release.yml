@@ -4,35 +4,29 @@ on:
     tags:
       - '**'
 
-env:
-  REGISTRY: ghcr.io
+env:  
+  SAMO_DOCKER_REGISTRY: ghcr.io
+  SAMO_DOCKER_GROUP: ${{ github.repository_owner }}/
+  SAMO_HELM_REGISTRY: oci://ghcr.io/${{ github.repository_owner }}/charts
 
 jobs:
   build:
-    name: build
+    name: build-release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.CI_PAT }}
-      - name: Set up java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          cache: 'maven'
+          ref: ${{ github.ref_name }}
+      - uses: lorislab/install-samo-action@v1      
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ${{ env.SAMO_DOCKER_REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build project
-        run: mvn -ntp -B -e clean package -Dquarkus.container-image.registry=${{ env.REGISTRY }} -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -Dquarkus.application.version=${{ github.ref_name }}
-      - name: Build helm
-        run: |
-          helm dependency update target/helm/todo-bff
-          helm package target/helm/todo-bff
-          PKG_NAME=`ls *.tgz`
-          helm push ${PKG_NAME} oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts
+          password: ${{ secrets.GITHUB_TOKEN }}             
+      - name: Release docker image
+        run: samo project docker release -v debug
+      - name: Release helm
+        run: samo project helm release -v debug    
+

@@ -5,8 +5,9 @@ on:
       - 'main'
   pull_request:
 
-env:
-  REGISTRY: ghcr.io
+env:  
+  SAMO_DOCKER_REGISTRY: ghcr.io
+  SAMO_HELM_REGISTRY: oci://ghcr.io/${{ github.repository_owner }}/charts
 
 jobs:
   build:
@@ -23,22 +24,18 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
           cache: 'maven'
-      - name: Project version
-        id: project_version
-        uses: lorislab/samo-action@v1.0.0
-        with:
-          args: samo project version
+      - uses: lorislab/install-samo-action@v1
+      - id: project_version
+        run: echo "stdout=$(samo project version)" >> $GITHUB_OUTPUT 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ${{ env.SAMO_DOCKER_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build project
-        run: mvn -ntp -B -e clean package -Dquarkus.container-image.registry=${{ env.REGISTRY }} -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -Dquarkus.application.version=${{ steps.project_version.outputs.stdout }}
+        run: mvn -ntp -B -e clean package -Dquarkus.container-image.registry=${{ env.SAMO_DOCKER_REGISTRY }} -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -Dquarkus.application.version=${{ steps.project_version.outputs.stdout }}
       - name: Build helm
-        run: |
-          helm dependency update target/helm/todo-bff
-          helm package target/helm/todo-bff
-          PKG_NAME=`ls *.tgz`
-          helm push ${PKG_NAME} oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts
+        run: samo project helm build -v debug
+      - name: Push helm
+        run: samo project helm push -v debug
