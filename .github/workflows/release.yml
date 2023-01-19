@@ -8,6 +8,7 @@ env:
   SAMO_DOCKER_REGISTRY: ghcr.io
   SAMO_DOCKER_GROUP: ${{ github.repository_owner }}/
   SAMO_HELM_REGISTRY: oci://ghcr.io/${{ github.repository_owner }}/charts
+  SAMO_HELM_VALUES_RELEASE_TEMPLATE_LIST: "app.image.tag={{ .Release }},app.version={{ .Release }}"
 
 jobs:
   build:
